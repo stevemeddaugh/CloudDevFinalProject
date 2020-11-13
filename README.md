@@ -13,8 +13,9 @@ The application should store GAME items, and each GAME item contains the followi
 * `gameId` (string) - a unique id for an item
 * `createdAt` (string) - date and time when an item was created
 * `name` (string) - name of a Board Game item (e.g. "Wingspan")
-* `dueDate` (string) - date and time by which an item should be completed
-* `done` (boolean) - true if an item was completed, false otherwise
+* `publisher` (string) - name of the publisher of the game (e.g. "Rio Grande Games")
+* `description` (string) - a summary description of the board game
+* `rating` (integer) - rating 1-10
 * `attachmentUrl` (string) (optional) - a URL pointing to an image attached to a GAME item
 
 You might also store an id of a user who created a GAME item.
@@ -36,17 +37,19 @@ It should return data that looks like this:
     {
       "gameId": "123",
       "createdAt": "2019-07-27T20:01:45.424Z",
-      "name": "Buy milk",
-      "dueDate": "2019-07-29T20:01:45.424Z",
-      "done": false,
+      "name": "Wingspan",
+      "publisher": "Rio Grande Games",
+      "description": "This is a worker placement game with a bird theme.",
+      "ranking": 10,
       "attachmentUrl": "http://example.com/image.png"
     },
     {
       "gameId": "456",
       "createdAt": "2019-07-27T20:01:45.424Z",
-      "name": "Send a letter",
-      "dueDate": "2019-07-29T20:01:45.424Z",
-      "done": true,
+      "name": "Dominion",
+      "publisher": "Rio Grande Games",
+      "description": "This is a deck building game.",
+      "ranking": 9,
       "attachmentUrl": "http://example.com/image.png"
     },
   ]
@@ -60,9 +63,10 @@ It receives a new GAME item to be created in JSON format that looks like this:
 ```json
 {
   "createdAt": "2019-07-27T20:01:45.424Z",
-  "name": "Buy milk",
-  "dueDate": "2019-07-29T20:01:45.424Z",
-  "done": false,
+  "name": "Obsession",
+  "publisher": "Kayenta Games",
+  "description": "Worker placement game with a mid-19th century Victorian England theme.",
+  "ranking": 10,
   "attachmentUrl": "http://example.com/image.png"
 }
 ```
@@ -74,9 +78,10 @@ It should return a new GAME item that looks like this:
   "item": {
     "gameId": "123",
     "createdAt": "2019-07-27T20:01:45.424Z",
-    "name": "Buy milk",
-    "dueDate": "2019-07-29T20:01:45.424Z",
-    "done": false,
+    "name": "Obsession",
+    "publisher": "Kayenta Games",
+    "description": "Worker placement game with a mid-19th century Victorian England theme.",
+    "ranking": 10,
     "attachmentUrl": "http://example.com/image.png"
   }
 }
@@ -88,9 +93,10 @@ It receives an object that contains three fields that can be updated in a GAME i
 
 ```json
 {
-  "name": "Buy bread",
-  "dueDate": "2019-07-29T20:01:45.424Z",
-  "done": true
+  "name": "Upstairs Downstairs",
+  "publisher": "Kayenta Games",
+  "description": "Expansion for Obsession",
+  "ranking": 9
 }
 ```
 

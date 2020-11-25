@@ -3,6 +3,7 @@
  */
 export interface UpdateGameRequest {
   name: string
-  dueDate: string
-  done: boolean
+  publisher: string
+  releaseYear: string
+  rating: number
 }

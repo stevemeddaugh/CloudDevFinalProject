@@ -3,5 +3,7 @@
  */
 export interface CreateGameRequest {
   name: string
-  dueDate: string
+  publisher: string
+  releaseYear: string
+  rating: number
 }

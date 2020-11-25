@@ -3,7 +3,8 @@ export interface GameItem {
   gameId: string
   createdAt: string
   name: string
-  dueDate: string
-  done: boolean
+  publisher: string
+  releaseYear: string
+  rating: number
   attachmentUrl?: string
 }

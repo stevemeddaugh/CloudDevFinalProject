@@ -15,8 +15,8 @@ provider:
   region: ${opt:region, 'us-west-2'}
 
   environment:
-    GAME_TABLE: GameList-table-2020-${self:provider.stage}
-    IMAGES_S3_BUCKET: gamelist-images-2020-${self:provider.stage}
+    GAME_TABLE: Boardgames-table-2020-${self:provider.stage}
+    IMAGES_S3_BUCKET: boardgame-images-2020-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
   iamRoleStatements:
@@ -35,14 +35,14 @@ provider:
         - s3:GetObject
       Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
 
-custom: 
-  documentation: 
-    api: 
-      info: 
+custom:
+  documentation:
+    api:
+      info:
         version: v1.0.0
         title: Board Games API
         description: Serverless exercise for board games list
-    models: 
+    models:
       - name: CreateGame
         contentType: application/json
         schema: ${file(models/create-game-request.json)}
@@ -60,6 +60,20 @@ functions:
       - http:
           method: get
           path: games
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.GAME_TABLE}
+
+  GetGame:
+    handler: src/lambda/http/getGame.handler
+    events:
+      - http:
+          method: get
+          path: games/{gameId}
           cors: true
           authorizer: Auth
     iamRoleStatements:
@@ -87,7 +101,7 @@ functions:
         Action:
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.GAME_TABLE}
-          
+
   UpdateGame:
     handler: src/lambda/http/updateGame.handler
     events:
@@ -121,8 +135,8 @@ functions:
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.GAME_TABLE}
 
-  GenerateUploadUrl:
-    handler: src/lambda/http/generateUploadUrl.handler
+  GenerateUrl:
+    handler: src/lambda/http/generateUrl.handler
     events:
       - http:
           method: post
@@ -190,7 +204,7 @@ resources:
       Properties:
         PolicyDocument:
           Id: MyPolicy
-          Version: "2012-10-17"
+          Version: '2012-10-17'
           Statement:
             - Sid: PublicReadForGetBucketObjects
               Effect: Allow
@@ -198,7 +212,7 @@ resources:
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
-                        
+
     GatewayResponseDefault4XX:
       Type: AWS::ApiGateway::GatewayResponse
       Properties:
@@ -209,4 +223,3 @@ resources:
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: ApiGatewayRestApi
-    

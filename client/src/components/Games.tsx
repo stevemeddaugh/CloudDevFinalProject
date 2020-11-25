@@ -1,17 +1,15 @@
-import dateFormat from 'dateformat'
 import { History } from 'history'
-import update from 'immutability-helper'
 import * as React from 'react'
 import {
   Button,
-  Checkbox,
   Divider,
   Grid,
   Header,
   Icon,
   Input,
   Image,
-  Loader
+  Loader,
+  Rating
 } from 'semantic-ui-react'
 
 import { createGame, deleteGame, getGames, patchGame } from '../api/games-api'
@@ -26,6 +24,9 @@ interface GamesProps {
 interface GamesState {
   games: Game[]
   newGameName: string
+  newGamePublisher: string
+  newGameYear: string
+  newGameRating: number
   loadingGames: boolean
 }
 
@@ -33,11 +34,22 @@ export class Games extends React.PureComponent<GamesProps, GamesState> {
   state: GamesState = {
     games: [],
     newGameName: '',
+    newGamePublisher: '',
+    newGameYear: '',
+    newGameRating: 0,
     loadingGames: true
   }
 
   handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ newGameName: event.target.value })
+  }
+
+  handlePublisherChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ newGamePublisher: event.target.value })
+  }
+
+  handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ newGameYear: event.target.value })
   }
 
   onEditButtonClick = (gameId: string) => {
@@ -46,14 +58,18 @@ export class Games extends React.PureComponent<GamesProps, GamesState> {
 
   onGameCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
-      const dueDate = this.calculateDueDate()
       const newGame = await createGame(this.props.auth.getIdToken(), {
         name: this.state.newGameName,
-        dueDate
+        publisher: this.state.newGamePublisher,
+        releaseYear: this.state.newGameYear,
+        rating: this.state.newGameRating
       })
       this.setState({
         games: [...this.state.games, newGame],
-        newGameName: ''
+        newGameName: '',
+        newGamePublisher: '',
+        newGameYear: '',
+        newGameRating: 0
       })
     } catch {
       alert('Game creation failed')
@@ -65,24 +81,6 @@ export class Games extends React.PureComponent<GamesProps, GamesState> {
       await deleteGame(this.props.auth.getIdToken(), gameId)
       this.setState({
         games: this.state.games.filter(game => game.gameId != gameId)
-      })
-    } catch {
-      alert('Game deletion failed')
-    }
-  }
-
-  onGameCheck = async (pos: number) => {
-    try {
-      const game = this.state.games[pos]
-      await patchGame(this.props.auth.getIdToken(), game.gameId, {
-        name: game.name,
-        dueDate: game.dueDate,
-        done: !game.done
-      })
-      this.setState({
-        games: update(this.state.games, {
-          [pos]: { done: { $set: !game.done } }
-        })
       })
     } catch {
       alert('Game deletion failed')
@@ -119,16 +117,26 @@ export class Games extends React.PureComponent<GamesProps, GamesState> {
         <Grid.Column width={16}>
           <Input
             action={{
-              color: 'teal',
+              color: 'orange',
               labelPosition: 'left',
               icon: 'add',
-              content: 'New task',
+              content: 'New game',
               onClick: this.onGameCreate
             }}
-            fluid
             actionPosition="left"
-            placeholder="To change the world..."
+            placeholder="Boardgame..."
+            value={this.state.newGameName}
             onChange={this.handleNameChange}
+          />
+          <Input
+            placeholder="Publisher..."
+            value={this.state.newGamePublisher}
+            onChange={this.handlePublisherChange}
+          />
+          <Input
+            placeholder="Year..."
+            value={this.state.newGameYear}
+            onChange={this.handleYearChange}
           />
         </Grid.Column>
         <Grid.Column width={16}>
@@ -142,7 +150,7 @@ export class Games extends React.PureComponent<GamesProps, GamesState> {
     if (this.state.loadingGames) {
       return this.renderLoading()
     }
-
+    
     return this.renderGamesList()
   }
 
@@ -156,23 +164,49 @@ export class Games extends React.PureComponent<GamesProps, GamesState> {
     )
   }
 
+  renderHeaderLabels() {
+    return (
+      <Grid.Row>
+        <Grid.Column width={4}>
+          <label className="ui header">Rating</label>
+        </Grid.Column>
+        <Grid.Column width={4}>
+          <label className="ui header">Name</label>
+        </Grid.Column>
+        <Grid.Column width={4} floated="right">
+          <label className="ui header">Publisher</label>
+        </Grid.Column>
+        <Grid.Column width={2} floated="right">
+          <label className="ui header">Release Year</label>
+        </Grid.Column>
+        <Grid.Column width={1} floated="right">
+          <label className="ui header">Edit</label>
+        </Grid.Column>
+        <Grid.Column width={1} floated="right">
+          <label className="ui header">Delete</label>
+        </Grid.Column>
+      </Grid.Row>
+    )
+  }
+
   renderGamesList() {
     return (
       <Grid padded>
+        {this.renderHeaderLabels()}
         {this.state.games.map((game, pos) => {
           return (
             <Grid.Row key={game.gameId}>
-              <Grid.Column width={1} verticalAlign="middle">
-                <Checkbox
-                  onChange={() => this.onGameCheck(pos)}
-                  checked={game.done}
-                />
+              <Grid.Column width={4}>
+                <Rating icon="star" maxRating={5} rating={game.rating} disabled />
               </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
+              <Grid.Column width={4}>
                 {game.name}
               </Grid.Column>
-              <Grid.Column width={3} floated="right">
-                {game.dueDate}
+              <Grid.Column width={4} floated="right">
+                {game.publisher}
+              </Grid.Column>
+              <Grid.Column width={2} floated="right">
+                {game.releaseYear}
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
@@ -203,12 +237,5 @@ export class Games extends React.PureComponent<GamesProps, GamesState> {
         })}
       </Grid>
     )
-  }
-
-  calculateDueDate(): string {
-    const date = new Date()
-    date.setDate(date.getDate() + 7)
-
-    return dateFormat(date, 'yyyy-mm-dd') as string
   }
 }

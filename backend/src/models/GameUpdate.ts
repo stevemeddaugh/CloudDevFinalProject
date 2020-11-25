@@ -1,5 +1,6 @@
 export interface GameUpdate {
   name: string
-  dueDate: string
-  done: boolean
+  publisher: string
+  releaseYear: string
+  rating: number
 }

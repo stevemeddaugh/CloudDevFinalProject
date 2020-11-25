@@ -11,6 +11,10 @@ export async function getAllGames(currentUserId: string,): Promise<GameItem[]> {
   return gameAccess.getAllGames(currentUserId)
 }
 
+export async function getSingleGame(gameId: string, userId: string): Promise<GameItem> {
+  return gameAccess.getGame(gameId, userId)
+}
+
 export async function createGame(
   createGameRequest: CreateGameRequest,
   currentUserId: string
@@ -23,8 +27,9 @@ export async function createGame(
     gameId,
     createdAt: new Date().toISOString(),
     name: createGameRequest.name,
-    dueDate: createGameRequest.dueDate,
-    done: false,
+    publisher: createGameRequest.publisher,
+    releaseYear: createGameRequest.releaseYear,
+    rating: createGameRequest.rating,
     attachmentUrl: null
   })
 }
@@ -45,6 +50,6 @@ export async function deleteGame(
 }
 
 export async function getUploadUrl(gameId: string, userId: string): Promise<string> {
-    return await gameAccess.generateUploadUrl(gameId, userId)
+    return await gameAccess.generateUrl(gameId, userId)
 }
   

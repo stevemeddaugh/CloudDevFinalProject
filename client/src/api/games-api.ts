@@ -5,21 +5,28 @@ import Axios from 'axios'
 import { UpdateGameRequest } from '../types/UpdateGameRequest';
 
 export async function getGames(idToken: string): Promise<Game[]> {
-  console.log('Fetching games')
-
   const response = await Axios.get(`${apiEndpoint}/games`, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
     },
   })
-  console.log('Games:', response.data)
+  return response.data.items
+}
+
+export async function getGame(idToken: string, gameId: string): Promise<Game> {
+  const response = await Axios.get(`${apiEndpoint}/games/${gameId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+  })
   return response.data.items
 }
 
 export async function createGame(
   idToken: string,
-  newGame: CreateGameRequest
+  newGame: CreateGameRequest,
 ): Promise<Game> {
   const response = await Axios.post(`${apiEndpoint}/games`,  JSON.stringify(newGame), {
     headers: {

@@ -25,11 +25,11 @@ export class GameAccess {
     return result.Items as GameItem[]
   }
 
-  async getGame(gameId: string): Promise<GameItem> {
+  async getGame(gameId: string, userId: string): Promise<GameItem> {
     const result = await this.docClient.query({
       TableName: this.gamesTable,
-      KeyConditionExpression: 'gameId = :gameId',
-      ExpressionAttributeValues: { ':gameId': gameId },
+      KeyConditionExpression: 'gameId = :gameId and userId = :userId',
+      ExpressionAttributeValues: { ':gameId': gameId, ':userId': userId },
       ScanIndexForward: false
     }).promise()
 
@@ -67,21 +67,22 @@ export class GameAccess {
         gameId: gameId,
         userId: userId
       },
-      UpdateExpression: 'SET #name = :name, dueDate = :dueDate, done = :done',
+      UpdateExpression: 'SET #name = :name, publisher = :publisher, releaseYear = :releaseYear,  rating = :rating',
       ExpressionAttributeNames: {
         '#name': 'name'
       },
       ExpressionAttributeValues: {
         ':name': updatedGame.name,
-        ':dueDate': updatedGame.dueDate,
-        ':done': updatedGame.done
+        ':publisher': updatedGame.publisher,
+        ':releaseYear': updatedGame.releaseYear,
+        ':rating': updatedGame.rating
       },
     }).promise()
 
     return ret.Attributes as GameItem
   }
 
-  async generateUploadUrl(gameId: string, userId: string): Promise<string> {
+  async generateUrl(gameId: string, userId: string): Promise<string> {
     await this.addUrlToGame(gameId, userId)
     const url = s3.getSignedUrl('putObject', {
       Bucket: this.s3Bucket,

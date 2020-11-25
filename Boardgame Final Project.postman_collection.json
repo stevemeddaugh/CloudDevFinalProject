@@ -170,6 +170,41 @@
 					"response": []
 				},
 				{
+					"name": "Get attachment URL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiId}}.execute-api.us-west-2.amazonaws.com/dev/games/{{gameID}}/attachment",
+							"protocol": "https",
+							"host": [
+								"{{apiId}}",
+								"execute-api",
+								"us-west-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"games",
+								"{{gameID}}",
+								"attachment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete game",
 					"request": {
 						"method": "DELETE",
@@ -204,41 +239,6 @@
 								"dev",
 								"games",
 								"{{gameID}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get attachment URL",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "https://{{apiId}}.execute-api.us-west-2.amazonaws.com/dev/games/3836b777-9bc4-4429-9b79-ba4e4f5f91c0/attachment",
-							"protocol": "https",
-							"host": [
-								"{{apiId}}",
-								"execute-api",
-								"us-west-2",
-								"amazonaws",
-								"com"
-							],
-							"path": [
-								"dev",
-								"games",
-								"3836b777-9bc4-4429-9b79-ba4e4f5f91c0",
-								"attachment"
 							]
 						}
 					},
@@ -304,12 +304,12 @@
 	],
 	"variable": [
 		{
-			"id": "4a0a56bf-7727-435d-9edc-2301c34d2ad8",
+			"id": "f45548a3-6d91-4c1d-bd7d-56b6e9ac139f",
 			"key": "apiId",
 			"value": "fzr1julq54"
 		},
 		{
-			"id": "cdf6af42-cec9-43ae-8f73-dcb412b36ce7",
+			"id": "699463ff-cd58-4ebe-991b-a03adaef8d82",
 			"key": "gameID",
 			"value": ""
 		}
